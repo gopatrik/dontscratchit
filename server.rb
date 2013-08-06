@@ -51,10 +51,11 @@ class SimpleChatServer < EM::Connection
 	def the_loop
 		@started = true
 		 Thread.start() do
-			loop do
+			until @@connected_clients.empty? do
 				sleep(1)
 				self.announce(Time.now.to_ms.to_s, true)
 			end
+			@started = false
 		 end
 	end
 
