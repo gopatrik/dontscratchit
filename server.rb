@@ -53,7 +53,7 @@ class SimpleChatServer < EM::Connection
 		 Thread.start() do
 			loop do
 				sleep(1)
-				self.announce(Util.millis.to_s, true)
+				self.announce(Time.now.to_ms.to_s, true)
 			end
 		 end
 	end

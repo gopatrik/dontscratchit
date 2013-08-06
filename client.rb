@@ -12,8 +12,8 @@ server = TCPSocket.open hostname, port
 
 
 loop do
-	server_time = server.gets.chomp.to_i
-	puts Util.millis - server_time
+	server_time = server.gets.to_i
+	puts Time.now.to_ms - server_time
 end
 puts server.gets.chomp
 
