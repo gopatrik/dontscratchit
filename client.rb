@@ -16,5 +16,9 @@ json_object = {
 
 server.puts json_object 
 
+loop do
+	server_time = server.gets.chomp.to_i
+	puts Time.now.to_i - server_time
+end
 puts server.gets.chomp
 
