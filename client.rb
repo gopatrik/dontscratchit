@@ -13,7 +13,7 @@ server = TCPSocket.open hostname, port
 
 loop do
 	server_time = server.gets.chomp.to_i
-	puts "#{server_time}: #{Util.millis - server_time}"
+	puts Util.millis - server_time
 end
 puts server.gets.chomp
 
