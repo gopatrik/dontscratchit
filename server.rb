@@ -70,9 +70,18 @@ class SimpleChatServer < EM::Connection
 		puts "A client has left..."
 	end
 
+	def next_beat_time
+		10 #current_beat
+	end
+
+	def next_beat client
+		"DIFF:#{next_beat_time + @@connected_clients[client][:offset]}"
+	end
+
 	def receive_data(data)
 		if data.start_with? "TIME" then
-			@@connected_clients[self][:offset] = Util.remove_time data
+			@@connected_clients[self][:offset] = Util.remove_prefix data
+			self.send_line "#{self}: #{next_beat(self)}"
 		else
 			begin
 				data = JSON.parse(data.strip)
@@ -83,7 +92,7 @@ class SimpleChatServer < EM::Connection
 				@@board.draw
 			rescue Exception => e
 				p e
-				self.send_line "You suck!"
+				self.send_line e
 			end
 		end
 	end
