@@ -3,7 +3,7 @@ class Util
 		2000
 	end
 
-	def self.micros
-		Time.now.nsec/1000
+	def self.millis
+		Time.now.nsec/10e6
 	end
 end
