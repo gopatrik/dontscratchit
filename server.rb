@@ -71,7 +71,6 @@ class SimpleChatServer < EM::Connection
 	end
 
 	def receive_data(data)
-		data = data.strip.chomp
 		if data.start_with? "TIME" then
 			@@connected_clients[self][:offset] = Util.remove_time data
 		else
