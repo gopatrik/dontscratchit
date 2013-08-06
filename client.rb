@@ -10,8 +10,8 @@ port = 2000
 server = TCPSocket.open hostname, port
 
 json_object = {
-	"name" => "Patrik",
-	"value" => "awesome"
+	"name" => +0,
+	"value" => -0
   }.to_json
 
 server.puts json_object 
