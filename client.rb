@@ -9,12 +9,6 @@ port = 2000
 
 server = TCPSocket.open hostname, port
 
-json_object = {
-	"name" => +0,
-	"value" => -0
-  }.to_json
-
-server.puts json_object 
 
 loop do
 	server_time = server.gets.chomp.to_i
