@@ -1,34 +1,26 @@
 require 'socket' # Sockets are in standard library
-require 'json'
+# require 'json'
 
 hostname = '192.168.1.9'
 port = 2000
 
-def start_chat name, scoket
-	puts "scoket connected"
-	Thread.start(scoket) do 
-		puts " -- Recieve loop started -- "
-		loop do
-			puts scoket.gets.chomp
-		end
-		puts " -- Recieve loop ended -- "
+def start_chat name, socket
+	puts "Connected!"
+
+	Thread.start(socket) do
+		loop { puts socket.gets.chomp } # Get data from server
 	end
-	puts " -- Send loop started -- "
-	loop do
-		scoket.puts "#{name}: #{gets}"
-	end
-	puts " -- Send loop ended --"
+	
+	loop { socket.puts "#{name}: #{gets}" } # Send data to server
 end
 
+def init
+	puts 'Connecting...'
+	socket = TCPSocket.open(hostname, port) # init socket
+	start_chat('Patrik', socket)
+end
 
-puts 'Connecting...'
-scoket = TCPSocket.open(hostname, port) # init socket
+init
 
-name = 'Patrik'
-
-start_chat name, scoket
-
-puts 'Connected!'
-
-scoket.close # Close the socket when done
+socket.close # Close the socket when done
 
