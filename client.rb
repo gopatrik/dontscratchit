@@ -17,7 +17,7 @@ class Client
 	def get_loop
 		loop do input = @server.gets.chomp
 			if input.start_with? 'TIME'
-				self.send_diff(input[5..-1].to_i)
+				self.send_diff(Util.remove_time input)
 			else
 				puts "JSON: " + input
 			end
