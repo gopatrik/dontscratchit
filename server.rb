@@ -52,7 +52,7 @@ class SimpleChatServer < EM::Connection
 		 Thread.start() do
 			loop do
 				sleep(1)
-				self.announce Time.now.to_i, true
+				self.announce(Util.micros.to_s, true)
 			end
 		 end
 	end
@@ -122,5 +122,5 @@ EventMachine.run do
 	Signal.trap("INT")  { EventMachine.stop }
 	Signal.trap("TERM") { EventMachine.stop }
 
-	EventMachine.start_server("0.0.0.0", 2000, SimpleChatServer)
+	EventMachine.start_server("0.0.0.0", Util.port, SimpleChatServer)
 end
