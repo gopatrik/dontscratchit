@@ -1,5 +1,6 @@
 require 'eventmachine'
 require 'json'
+require_relative 'lib'
 
 class Board
 
