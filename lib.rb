@@ -18,4 +18,8 @@ class Util
 	def self.port
 		2000
 	end
+
+	def self.remove_time string
+		string[5..-1].to_i
+	end
 end

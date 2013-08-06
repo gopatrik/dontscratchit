@@ -37,12 +37,10 @@ end
 
 class SimpleChatServer < EM::Connection
 
-	@@connected_clients = Array.new
+	@@connected_clients = Hash.new
 	@started = false
 
 	@@board = Board.new
-
-	attr_reader :username
 	
 	#
 	# EventMachine handlers
@@ -53,14 +51,16 @@ class SimpleChatServer < EM::Connection
 		 Thread.start() do
 			until @@connected_clients.empty? do
 				sleep(1)
-				self.announce(Time.now.to_ms.to_s, true)
+				self.announce("TIME:#{Time.now.to_ms.to_s}", true)
 			end
 			@started = false
 		 end
 	end
 
 	def post_init
-		@@connected_clients << self
+		@@connected_clients[self] = {
+			:offset => 0
+		}
 		self.the_loop unless @started
 		puts "A client has connected..."
 	end
@@ -71,10 +71,13 @@ class SimpleChatServer < EM::Connection
 	end
 
 	def receive_data(data)
+		data = data.strip.chomp
+		if data.start_with? "TIME" then
+			@@connected_clients[self][:offset] = Util.remove_time data
+		else
 			begin
 				data = JSON.parse(data.strip)
 				self.announce data
-
 
 				@@board.parse_diff data["diff"]
 				puts "#{data['name']} changed the board!" unless data["name"].nil?
@@ -83,20 +86,8 @@ class SimpleChatServer < EM::Connection
 				p e
 				self.send_line "You suck!"
 			end
-	end
-
-	#
-	# Message handling
-	#
-
-	def handle_chat_message(msg)
-		if command?(msg)
-			self.handle_command(msg)
-		else
-			self.announce(msg, "#{@username}:")
 		end
 	end
-
 
 	#
 	# Helpers
@@ -104,14 +95,14 @@ class SimpleChatServer < EM::Connection
 
 	def announce(msg = nil, all = false)
 		if all
-			@@connected_clients.each { |c| c.send_line("#{msg}") } unless msg.empty?
+			@@connected_clients.each { |c, v| c.send_line("#{msg}") } unless msg.empty?
 		else
-			self.other_peers.each { |c| c.send_line("#{msg}") } unless msg.empty?
+			self.other_peers.each { |c, v| c.send_line("#{msg}") } unless msg.empty?
 		end
 	end
 
 	def other_peers
-		@@connected_clients.reject { |c| self == c }
+		@@connected_clients.reject { |c, v| self == c }
 	end # other_peers
 
 	def send_line(line)
