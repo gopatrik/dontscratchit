@@ -29,6 +29,10 @@ class Board
 		end
 		3.times do puts end
 	end
+
+	def to_json(*a)
+		@board.to_json(*a)
+	end
 end
 
 
@@ -59,9 +63,24 @@ class SimpleChatServer < EM::Connection
 			:offset => 0,
 			:boards => [Board.new, Board.new]
 		}
+		# 30 / 132 
+		self.send_line all_clients_data unless other_peers.empty?
 
 		self.the_loop unless @started
 		puts "A client has connected..."
+	end
+
+	def all_clients_data
+		data = Array.new
+		other_peers.each do |scs, client|
+			index = { :client_id => client.object_id,
+								:boards => Array.new }
+			client[:boards].each do |board|
+				index[:boards] << board
+			end
+			data << index
+		end
+		data.to_json
 	end
 
 	def unbind
