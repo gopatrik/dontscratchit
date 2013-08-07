@@ -3,7 +3,6 @@ require 'json'
 require_relative 'lib'
 
 class Board
-
 	def initialize()
 		@board = Array.new 256, false
 	end
@@ -30,8 +29,6 @@ class Board
 		end
 		3.times do puts end
 	end
-	
-	
 end
 
 
@@ -40,7 +37,7 @@ class SimpleChatServer < EM::Connection
 	@@connected_clients = Hash.new
 	@started = false
 
-	@@board = Board.new
+	# @@board = Board.new
 	
 	#
 	# EventMachine handlers
@@ -59,8 +56,10 @@ class SimpleChatServer < EM::Connection
 
 	def post_init
 		@@connected_clients[self] = {
-			:offset => 0
+			:offset => 0,
+			:boards => [Board.new, Board.new]
 		}
+
 		self.the_loop unless @started
 		puts "A client has connected..."
 	end
@@ -87,14 +86,25 @@ class SimpleChatServer < EM::Connection
 				data = JSON.parse(data.strip)
 				self.announce data.to_json
 
-				@@board.parse_diff data["diff"]
-				puts "#{data['name']} changed the board!" unless data["name"].nil?
-				@@board.draw
+				id = self.read_data data["diff"]
+
+				puts "#{data['name']} changed board #{id}!" unless data["name"].nil?
+				get_board(id).draw
 			rescue Exception => e
 				p e
 				self.send_line e
 			end
 		end
+	end
+
+	def read_data data
+		board = get_board(data["board_id"])
+		board.parse_diff data["squares"]
+		data["board_id"]
+	end
+
+	def get_board id
+		@@connected_clients[self][:boards][id]
 	end
 
 	#
