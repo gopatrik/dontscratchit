@@ -33,12 +33,9 @@ class Client
 	def send_diff server_time
 		@diff_list << Time.now.to_ms - server_time 
 
-		if(@diff_list.size % 10 == 0) then
+		if(@diff_list.size % 10 == 1) then
 			@server.print "TIME:#{@diff_list.average.to_i}"
 			@diff_list.clear
-
-		elsif @diff_list.size == 1
-			@server.print "TIME:#{@diff_list.average.to_i}"
 		end
 	end
 	
