@@ -4,7 +4,7 @@ require 'json'
 require_relative 'lib'
 
 class Client
-	HOSTNAME = '192.168.1.9'
+	HOSTNAME = '127.0.0.1'
 	PORT = Util.port
 	def initialize
 		@server = TCPSocket.open HOSTNAME, PORT
@@ -17,11 +17,12 @@ class Client
 	def get_loop
 		loop do input = @server.gets.chomp
 			if input.start_with? 'TIME'
-				self.send_diff(Util.remove_time input)
+				self.send_diff(Util.remove_prefix input)
 			else
 				puts "JSON: " + input
 			end
 		end
+
 	end
 
 	def input_loop
@@ -31,8 +32,8 @@ class Client
 	end
 
 	def send_diff server_time
+		# puts server_time
 		@diff_list << Time.now.to_ms - server_time 
-
 		if(@diff_list.size % 10 == 1) then
 			@server.print "TIME:#{@diff_list.average.to_i}"
 			@diff_list.clear
