@@ -19,7 +19,7 @@ class Util
 		2000
 	end
 
-	def self.remove_time string
+	def self.remove_prefix string
 		string[5..-1].to_i
 	end
 end
