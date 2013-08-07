@@ -5,7 +5,7 @@ require_relative 'lib'
 class Board
 
 	def initialize()
-		@board = Array.new 64, false
+		@board = Array.new 256, false
 	end
 
 	# array of strings ['-0', '14' .....]
@@ -26,7 +26,7 @@ class Board
 		@board.each_with_index do |square, i|
 			puts "" if (i % cols == 0 && i != 0)
 
-			print "[#{square ? 'X' : ' '}]\t"
+			print "[#{square ? 'X' : ' '}] "
 		end
 		3.times do puts end
 	end
@@ -81,11 +81,11 @@ class SimpleChatServer < EM::Connection
 	def receive_data(data)
 		if data.start_with? "TIME" then
 			@@connected_clients[self][:offset] = Util.remove_prefix data
-			self.send_line "#{self}: #{next_beat(self)}"
+			self.send_line "#{next_beat(self)}"
 		else
 			begin
 				data = JSON.parse(data.strip)
-				self.announce data
+				self.announce data.to_json
 
 				@@board.parse_diff data["diff"]
 				puts "#{data['name']} changed the board!" unless data["name"].nil?

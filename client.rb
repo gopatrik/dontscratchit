@@ -18,8 +18,10 @@ class Client
 		loop do input = @server.gets.chomp
 			if input.start_with? 'TIME'
 				self.send_diff(Util.remove_prefix input)
-			else
-				puts "JSON: " + input
+			elsif input.start_with? 'DIFF'
+				puts input
+			else # JSON
+				puts input
 			end
 		end
 
